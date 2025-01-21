@@ -12,8 +12,15 @@ import templateGame from '@/lib/template-game';
 import GameLoader from '@/components/GameLoader';
 
 export default function GameInterface() {
-  const [gameEngine] = useState(() => {
-    const savedGame = localStorage.getItem('loadedGame');
+  const [gameEngine, setGameEngine] = useState<GameEngine | null>(null);
+  const [messages, setMessages] = useState<string[]>([]);
+  const [command, setCommand] = useState('');
+  const [gameStarted, setGameStarted] = useState(false);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Initialize game engine on client side only
+    const savedGame = window.localStorage.getItem('loadedGame');
     let gameData = templateGame;
     
     if (savedGame) {
@@ -27,18 +34,13 @@ export default function GameInterface() {
       }
     }
     
-    return new GameEngine(gameData);
-  });
-
-  const [messages, setMessages] = useState<string[]>([]);
-  const [command, setCommand] = useState('');
-  const [gameStarted, setGameStarted] = useState(false);
-  const scrollAreaRef = useRef<HTMLDivElement>(null);
+    setGameEngine(new GameEngine(gameData));
+  }, []);
 
   useEffect(() => {
-    if (!gameStarted) {
+    if (gameEngine && !gameStarted) {
       const currentMap = gameEngine.getCurrentLocation();
-      const gameName = localStorage.getItem('selectedGameFile') || 'Default Game';
+      const gameName = window.localStorage.getItem('selectedGameFile') || 'Default Game';
       setMessages([
         `Loading "${gameName}"...`,
         gameEngine.game.Maps[0].Introduction,
@@ -62,8 +64,7 @@ export default function GameInterface() {
 
   const handleCommand = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!command.trim()) return;
+    if (!gameEngine || !command.trim()) return;
 
     addMessage(`> ${command}`);
     const messages = gameEngine.handleCommand(command);
@@ -71,7 +72,7 @@ export default function GameInterface() {
     setCommand('');
   };
 
-  if (!localStorage.getItem('selectedGameFile')) {
+  if (!gameEngine || !window.localStorage.getItem('selectedGameFile')) {
     return (
       <div className="terminal min-h-screen p-4">
         <div className="scanline"></div>
@@ -93,8 +94,8 @@ export default function GameInterface() {
               
               <button
                 onClick={() => {
-                  localStorage.setItem('selectedGameFile', 'Blackwood Manor');
-                  localStorage.setItem('loadedGame', JSON.stringify(templateGame));
+                  window.localStorage.setItem('selectedGameFile', 'Blackwood Manor');
+                  window.localStorage.setItem('loadedGame', JSON.stringify(templateGame));
                   window.location.reload();
                 }}
                 className="border-2 border-green-500 bg-transparent text-green-500 hover:bg-green-500 hover:text-black transition-colors font-mono uppercase p-6 rounded flex flex-col items-center justify-center gap-3 h-40"
@@ -124,12 +125,12 @@ export default function GameInterface() {
               <br />
               COPYRIGHT 2075-2077 ROBCO INDUSTRIES
               <br />
-              - {localStorage.getItem('selectedGameFile')} -
+              - {window.localStorage.getItem('selectedGameFile')} -
             </span>
             <Button
               onClick={() => {
-                localStorage.removeItem('loadedGame');
-                localStorage.removeItem('selectedGameFile');
+                window.localStorage.removeItem('loadedGame');
+                window.localStorage.removeItem('selectedGameFile');
                 window.location.reload();
               }}
               className="bg-transparent border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-black transition-colors font-mono uppercase"
