@@ -92,7 +92,7 @@ function Flow({ map, game, onChange, mapIndex, onNodeSelect, selectedNode }: Flo
           updatedMap.Locations[locationIndex].FoculPoints[fpIndex].Events.filter((_, i) => i !== eventIndex);
         break;
       case 'customEvent':
-        if (updatedMap.Locations[locationIndex].FoculPoints[fpIndex].Aliases) {
+        if (updatedMap.Locations[locationIndex].FoculPoints[fpIndex].Aliases && typeof aliasIndex === 'number') {
           updatedMap.Locations[locationIndex].FoculPoints[fpIndex].Aliases = 
             updatedMap.Locations[locationIndex].FoculPoints[fpIndex].Aliases.filter((_, i) => i !== aliasIndex);
         }
