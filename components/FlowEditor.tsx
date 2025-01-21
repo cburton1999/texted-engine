@@ -157,7 +157,7 @@ function Flow({ map, game, onChange, mapIndex, onNodeSelect, selectedNode }: Flo
     if (!node) return;
 
     const updatedMap: Partial<Map> = { ...map };
-    const { nodeType, locationIndex, fpIndex, eventIndex } = node.data;
+    const { nodeType, locationIndex, fpIndex, eventIndex, aliasIndex } = node.data;
 
     switch (nodeType) {
       case 'location':
