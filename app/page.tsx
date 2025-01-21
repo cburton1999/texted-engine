@@ -1,8 +1,8 @@
-import Link from 'next/link';
-import GameInterface from '@/components/GameInterface';
-import { Plus, Upload } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import GameLoader from '@/components/GameLoader';
+import dynamic from 'next/dynamic';
+
+const GameInterface = dynamic(() => import('@/components/GameInterface'), {
+  ssr: false
+});
 
 export default function Home() {
   return (
